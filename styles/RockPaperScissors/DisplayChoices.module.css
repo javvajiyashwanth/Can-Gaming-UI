@@ -1,0 +1,35 @@
+.player {
+    transform: rotateY(180deg);
+}
+
+@keyframes playerAnimationKeyFrame {
+    0% {
+        transform: rotateY(180deg) translateY(0px);
+    }
+    50% {
+        transform: rotateY(180deg) translateY(-50px) rotateZ(30deg);
+    }
+    100% {
+        transform: rotateY(180deg) translateY(0px);
+    }
+}
+
+.playerAnimation {
+    animation: playerAnimationKeyFrame .7s ease-in-out 3;
+}
+
+@keyframes computerAnimationKeyFrame {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-50px) rotateZ(30deg);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.computerAnimation {
+    animation: computerAnimationKeyFrame .7s ease-in-out 3;
+}

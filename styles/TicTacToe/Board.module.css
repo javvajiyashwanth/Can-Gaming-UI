@@ -1,0 +1,16 @@
+.board {
+    height: 20rem;
+    width: 20rem;
+	margin: 0 auto;
+	display: grid;
+	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.board > .cell {
+    padding: 0;
+    line-height: normal;
+    font-size: 4rem;
+    font-weight: 900;
+    border: solid 3px #aaa;
+    border-radius: 0;
+}
