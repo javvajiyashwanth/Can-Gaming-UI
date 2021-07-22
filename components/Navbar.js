@@ -126,17 +126,25 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleThemeClick }) => {
 
+  // CSS Classes
   const classes = useStyles();
+  
+  // Theme
   const theme = useTheme();
 
+  // Loading State
   const [isLoading, setIsLoading] = useState(true);
-  const [session, loading] = useSession();
+  
+  // Next Auth Session
+  const [session] = useSession();
 
+  // Profile Menu
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const handleProfileMenuOpen = (event) => setProfileAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setProfileAnchorEl(null);
   const isProfileMenuOpen = Boolean(profileAnchorEl);
   
+  // Mobile Menu
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const handleMobileMenuOpen = (event) => setMobileMoreAnchorEl(event.currentTarget);
   const handleMobileMenuClose = () => setMobileMoreAnchorEl(null);

@@ -21,7 +21,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import Paper from '@material-ui/core/Paper';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 // Icons
 import DoneOutlineIcon from '@material-ui/icons/DoneOutline';
@@ -43,7 +42,7 @@ import { isNumberEntered, isValidRoomId } from '../utils/Global';
 
 // Constants
 import { INITIAL_BOARD_STATE } from '../constants/TicTacToe';
-import { INITIAL_TWO_PLAYER_SCORES_STATE } from '../constants/Global';
+import { INITIAL_PLAYER_STATE, INITIAL_TWO_PLAYER_SCORES_STATE } from '../constants/Global';
 import { useRootStyles, useColorStyles, useInputStyles, useCardStyles } from '../constants/Styles';
 
 const TicTacToe = () => {
@@ -66,8 +65,11 @@ const TicTacToe = () => {
 
     // Socket IO
     const [socket, setSocket] = useState(null);
+
+    // Socket Room
     const [joinRoomId, setJoinRoomId] = useState("");
     const [shareRoomId, setShareRoomId] = useState("");
+    const [shareRoomIdCopyState, setShareRoomIdCopyState] = useState("Copy");
 
     // Game States
     const [isChoosingTurn, setIsChoosingTurn] = useState(false);
@@ -75,14 +77,12 @@ const TicTacToe = () => {
     const [isPlayAgainRequestReceived, setIsPlayAgainRequestReceived] = useState(false);
     const [board, setBoard] = useState(INITIAL_BOARD_STATE);
     const [player, setPlayer] = useState({
+        ...INITIAL_PLAYER_STATE,
         name: "You",
-        email: "",
-        value: "",
     });
     const [opponent, setOpponent] = useState({
+        ...INITIAL_PLAYER_STATE,
         name: "Opponent",
-        email: "",
-        value: "",
     });
     const [turn, setTurn] = useState("X");
     const [scores, setScores] = useState(INITIAL_TWO_PLAYER_SCORES_STATE);
@@ -107,7 +107,6 @@ const TicTacToe = () => {
     // Waiting For Other Player Dialog
     const [waitingForOtherPlayerDialogOpen, setWaitingForOtherPlayerDialogOpen] = useState(false);
     const handleWaitingForOtherPlayerDialogOpen = () => setWaitingForOtherPlayerDialogOpen(true);
-    const handleWaitingForOtherPlayerDialogClose = () => setWaitingForOtherPlayerDialogOpen(false);
 
     // Choose Turn Dialog
     const [chooseTurnDialogOpen, setChooseTurnDialogOpen] = useState(false);
@@ -143,7 +142,7 @@ const TicTacToe = () => {
         } else if (gameType === "Multi Player") {
             handleSocketEmitEvents("Move", {
                 index,
-                placeValue: player.value
+                placeValue: player.value,
             });
         }
     };
@@ -167,15 +166,6 @@ const TicTacToe = () => {
             if (!isPlayAgainRequestReceived) handleSocketEmitEvents("Send Play Again Request");
             else handleSocketEmitEvents("Accept Play Again Request");
         }
-    };
-
-    const copyToClipboard = async (text) => {
-        const textField = document.createElement('textarea');
-        textField.innerText = text;
-        document.body.appendChild(textField);
-        textField.select();
-        document.execCommand('copy');
-        textField.remove();
     };
 
     const getPlayAgainIcon = () => {
@@ -203,15 +193,11 @@ const TicTacToe = () => {
         if (gameType === "Single Player") {
             setOpponent({
                 ...opponent,
-                name: "AI"
+                name: "AI",
             });
             handleChooseTurnDialogOpen();
         } else if (gameType === "Multi Player") {
-            if (!socket) {
-                setSocket(io("http://localhost:4000", {
-                    path: "/tic-tac-toe"
-                }));
-            }
+            fetch('/api/socketio/tic-tac-toe').finally(() => setSocket(io()));
         }
     }, [gameType]);
 
@@ -219,6 +205,8 @@ const TicTacToe = () => {
         if (socket) {
             handleStartGameDialogOpen();
             socket.on("Waiting", async ({ roomId }) => {
+                await setBoard(INITIAL_BOARD_STATE);
+                await setTurn("X");
                 await setShareRoomId(roomId);
                 await setStartGameDialogOpen(false);
                 await setChooseTurnDialogOpen(false);
@@ -272,7 +260,7 @@ const TicTacToe = () => {
             socket.on("Alert", ({ severity, message }) => {
                 addAlert({
                     severity,
-                    message
+                    message,
                 });
             });
         }
@@ -476,24 +464,21 @@ const TicTacToe = () => {
                                     value={shareRoomId}
                                     readOnly
                                 />
-                                <Tooltip title="Copy to Clipboard">
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        size="large"
-                                        className={inputClasses.inputButtonGroupButton}
-                                        onClick={() => {
-                                            copyToClipboard(shareRoomId).then(() => {
-                                                addAlert({
-                                                    severity: "info",
-                                                    message: "Room ID copied to clipboard"
-                                                });
-                                            });
-                                        }}
-                                    >
-                                        Copy
-                                    </Button>
-                                </Tooltip>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    size="large"
+                                    className={inputClasses.inputButtonGroupButton}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(shareRoomId);
+                                        setShareRoomIdCopyState("Copied!");
+                                        setTimeout(() => {
+                                            setShareRoomIdCopyState("Copy");
+                                        }, 5000);
+                                    }}
+                                >
+                                    {shareRoomIdCopyState}
+                                </Button>
                             </Paper>
                         ]}
                     />

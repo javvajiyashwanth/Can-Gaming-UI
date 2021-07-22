@@ -15,8 +15,18 @@ export const GAMES = [
     // },
 ];
 
+export const INITIAL_PLAYER_STATE = {
+    name: "",
+    email: "",
+    value: "",
+};
+
 export const INITIAL_TWO_PLAYER_SCORES_STATE = {
     playerScore: 0,
     tieScore: 0,
     opponentScore: 0,
 };
+
+export const ROOM_ID_CHARACTERS = "0123456789";
+
+export const ROOM_ID_LENGTH = 6;

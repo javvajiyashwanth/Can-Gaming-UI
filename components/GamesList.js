@@ -25,7 +25,7 @@ const GamesList = () => {
                         </ListItemAvatar>
                         <ListItemText
                             primaryTypographyProps={{
-                                color: 'textPrimary'
+                                color: 'textPrimary',
                             }}
                             primary={game.name}
                         />

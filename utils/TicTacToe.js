@@ -1,29 +1,6 @@
 // AI
 import { minimax } from "../ai/TicTacToe";
 
-export const findBestMove = (board, level) => {
-
-	let bestScore = level % 2 === 0 ? -Infinity : Infinity;
-	let bestMove = null;
-
-	if (getMovesLeft(board)) {
-		for (let i = 0; i < 9; i++) {
-			if (board[i] === null) {
-				board[i] = level % 2 == 0 ? 'X' : 'O';
-				let score = minimax(board, level + 1, level % 2 === 0 ? false : true);
-				board[i] = null;
-				if ((level % 2 === 0 && score > bestScore) || (level % 2 !== 0 && score < bestScore)) {
-					bestScore = score;
-					bestMove = i;
-				}
-			}
-		}
-	}
-
-	return bestMove;
-
-};
-
 export const getMovesLeft = (board) => {
 
 	let count = 0;
@@ -55,5 +32,28 @@ export const getWinner = (board) => {
 	};
 
 	return getMovesLeft(board) ? null : "Tie";
+
+};
+
+export const findBestMove = (board, level) => {
+
+	let bestScore = level % 2 === 0 ? -Infinity : Infinity;
+	let bestMove = null;
+
+	if (getMovesLeft(board)) {
+		for (let i = 0; i < 9; i++) {
+			if (board[i] === null) {
+				board[i] = level % 2 == 0 ? 'X' : 'O';
+				let score = minimax(board, level + 1, level % 2 === 0 ? false : true);
+				board[i] = null;
+				if ((level % 2 === 0 && score > bestScore) || (level % 2 !== 0 && score < bestScore)) {
+					bestScore = score;
+					bestMove = i;
+				}
+			}
+		}
+	}
+
+	return bestMove;
 
 };
