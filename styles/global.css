@@ -1,3 +1,24 @@
+*::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.87);
+    box-shadow: -3px 0 5px 0 rgba(0, 0, 0, 0.16), -3px 0 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+*::-webkit-scrollbar-track {
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.16), 0 0 10px 0 rgba(0, 0, 0, 0.12);
+    background-color: rgba(0, 0, 0, 0.87);
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: #f50057;
+    border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: #ff4081;
+}
+
 .MuiDialogContent-root {
     padding: 8px 24px 16px!important;
 }

@@ -14,13 +14,7 @@ export const createRoom = async () => {
     return roomId;
 };
 
-export const addPlayerToRoom = (roomId, player) => {
-    const room = rooms.get(roomId);
-    room.players.push({
-        ...player,
-        value: "",
-    });
-};
+export const addPlayerToRoom = (roomId, player) => rooms.get(roomId).players.push(player);
 
 const rooms = new Map();
 
@@ -30,13 +24,18 @@ const ioHandler = (req, res) => {
         io.on("connection", socket => {
             socket.on("New Game", ({ name, email }) => {
                 createRoom().then(roomId => {
-                    addPlayerToRoom(roomId, {
-                        socketId: socket.id,
+                    const player = {
                         name,
                         email,
+                        value: "",
+                        isHost: true,
+                    };
+                    addPlayerToRoom(roomId, {
+                        socketId: socket.id,
+                        ...player,
                     });
                     socket.join(roomId);
-                    io.to(roomId).emit("Waiting", { roomId });
+                    io.to(roomId).emit("Waiting", { roomId, updatedPlayer: player });
                 });
             });
             socket.on("Join Room", ({ name, email, roomId }) => {
@@ -47,12 +46,18 @@ const ioHandler = (req, res) => {
                             socket.emit("Alert", {
                                 severity: "warning",
                                 message: `You are already in the room id ${roomId}`,
+                                cause: "Join Room",
                             });
                         } else {
-                            addPlayerToRoom(roomId, {
-                                socketId: socket.id,
+                            const player = {
                                 name,
                                 email,
+                                value: "",
+                                isHost: false,
+                            };
+                            addPlayerToRoom(roomId, {
+                                socketId: socket.id,
+                                ...player,
                             });
                             socket.join(roomId);
                             const { socketId: playerOneSocket, ...playerOne } = room.players[0];
@@ -64,12 +69,14 @@ const ioHandler = (req, res) => {
                         socket.emit("Alert", {
                             severity: "warning",
                             message: `Room ID ${roomId} is full`,
+                            cause: "Join Room",
                         });
                     }
                 } else {
                     socket.emit("Alert", {
                         severity: "error",
                         message: `Room ID ${roomId} doesn't exist`,
+                        cause: "Join Room",
                     });
                 }
             });
@@ -104,8 +111,8 @@ const ioHandler = (req, res) => {
                 room.players[1].value = "";
                 const { socketId: playerOneSocket, ...playerOne } = room.players[0];
                 const { socketId: playerTwoSocket, ...playerTwo } = room.players[1];
-                io.to(playerOneSocket).emit("Play Again", { players: [playerOne, playerTwo], isCreator: true });
-                io.to(playerTwoSocket).emit("Play Again", { players: [playerTwo, playerOne], isCreator: false });
+                io.to(playerOneSocket).emit("Play Again", { players: [playerOne, playerTwo] });
+                io.to(playerTwoSocket).emit("Play Again", { players: [playerTwo, playerOne] });
             });
             socket.on('disconnecting', () => {
                 // @ts-ignore
@@ -120,11 +127,25 @@ const ioHandler = (req, res) => {
                         case 2:
                             const player = currentRoom.players.filter((player) => player.socketId === socket.id)[0];
                             currentRoom.players = currentRoom.players.filter((player) => player.socketId !== socket.id);
-                            io.to(roomId).emit("Alert", {
-                                severity: "info",
-                                message: `${player.name} got disconnected. You are the host now!`,
-                            });
-                            io.to(roomId).emit("Waiting", { roomId });
+                            if (player.isHost) {
+                                currentRoom.players[0].isHost = true;
+                                const { socketId, ...opponent } = currentRoom.players[0];
+                                io.to(roomId).emit("Alert", {
+                                    severity: "info",
+                                    message: `${player.name} got disconnected. You are the host now!`,
+                                    cause: "Host Left",
+                                    updatedPlayer: opponent
+                                });
+                            } else {
+                                io.to(roomId).emit("Alert", {
+                                    severity: "info",
+                                    message: `${player.name} got disconnected.`,
+                                    cause: "Player Left",
+                                });
+                            }
+                            const { socketId, ...opponent } = currentRoom.players[0];
+                            io.to(roomId).emit("Waiting", { roomId, updatedPlayer: opponent });
+                            break;
                     }
                 }
             });

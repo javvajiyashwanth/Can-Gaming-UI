@@ -1,28 +1,7 @@
 // Material UI
 // Core
 import { makeStyles } from '@material-ui/core/styles';
-
-export const useCardStyles = makeStyles((theme) => ({
-    card: {
-        display: "flex",
-        flexDirection: "row",
-        [theme.breakpoints.down("sm")]: {
-            flexDirection: "column",
-        },
-    },
-    thumbnail: {
-        maxWidth: 400,
-    },
-    cardActions: {
-        padding: theme.spacing(4),
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-around",
-        [theme.breakpoints.down("sm")]: {
-            flexDirection: "row",
-        },
-    },
-}));
+import { FullscreenExitTwoTone } from '@material-ui/icons';
 
 export const useColorStyles = makeStyles((theme) => ({
     primary: {
@@ -55,6 +34,42 @@ export const useColorStyles = makeStyles((theme) => ({
     },
 }));
 
+export const useGameCardStyles = makeStyles((theme) => ({
+    card: {
+        display: "flex",
+        flexDirection: "row",
+        [theme.breakpoints.down("sm")]: {
+            flexDirection: "column",
+        },
+    },
+    media: {
+        maxWidth: 400,
+        maxHeight: 400,
+    },
+    cardActions: {
+        padding: theme.spacing(4),
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-around",
+        [theme.breakpoints.down("sm")]: {
+            flexDirection: "row",
+        },
+        '& button': {
+            margin: '6px',
+        },
+    },
+}));
+
+export const useGameThumbnailStyles = makeStyles((theme) => ({
+    root: {
+        display: "flex",
+        justifyContent: "space-around",
+    },
+    media: {
+        height: 160,
+    },
+}));
+
 export const useInputStyles = makeStyles((theme) => ({
     inputButtonGroupRoot: {
         display: 'flex',
@@ -75,9 +90,12 @@ export const useInputStyles = makeStyles((theme) => ({
     },
 }));
 
-export const useRootStyles = makeStyles({
-    root: {
-        display: "flex",
-        justifyContent: "center",
+export const useRootStyles = makeStyles((theme) => ({
+    padding: {
+        padding: theme.spacing(3),
     },
-});
+    flex: {
+        display: "flex",
+        justifyContent: "space-around",
+    },
+}));

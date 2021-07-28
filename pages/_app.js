@@ -1,5 +1,8 @@
 // React
-import React, { useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
+
+// Next
+import Head from 'next/head';
 
 // Next Auth
 import { Provider } from 'next-auth/client';
@@ -15,7 +18,9 @@ import clsx from 'clsx';
 import { ThemeProvider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
+import Fab from '@material-ui/core/Fab';
+// Icons
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
 // CSS
 import '../styles/global.css';
@@ -48,14 +53,14 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     marginLeft: '72px',
     height: '100vh',
-    width: 'calc(100vw - 72px)',
-  },
-  containerWrapper: {
-    height: `calc(100vh - ${theme.mixins.toolbar.height})`,
-    overflow: 'auto',
+    width: 'calc(100% - 72px)',
   },
   container: {
-    padding: theme.spacing(3),
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    overflowX: 'auto',
   },
   contentExpand: {
     transition: theme.transitions.create(['width', 'margin'], {
@@ -71,6 +76,11 @@ const useStyles = makeStyles((theme) => ({
       duration: theme.transitions.duration.shorter,
     }),
   },
+  backToTop: {
+    position: 'fixed',
+    bottom: theme.spacing(2),
+    right: theme.spacing(3),
+  },
 }));
 
 const MyApp = ({ Component, pageProps }) => {
@@ -85,27 +95,68 @@ const MyApp = ({ Component, pageProps }) => {
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
 
+  const content = createRef();
+
+  const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
+
+  const scrollToTop = () => {
+    content.current.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+    setIsBackToTopVisible(false);
+  };
+
+  useEffect(() => {
+    const toggleIsBackToTopVisible = () => {
+      if (content && content.current) {
+        const scrolled = content.current.scrollTop;
+        if (scrolled > 200) setIsBackToTopVisible(true);
+        else if (scrolled <= 200) setIsBackToTopVisible(false);
+      }
+    };
+
+    if (content && content.current) {
+      content.current.addEventListener('scroll', toggleIsBackToTopVisible);
+    }
+
+    return () => {
+      if (content && content.current) {
+        content.current.removeEventListener("scroll", toggleIsBackToTopVisible);
+      }
+    };
+  }, [content]);
+
   return (
-    <Provider session={pageProps.session}>
-      <ThemeProvider theme={theme}>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Navbar drawerOpen={drawerOpen} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} handleToggleThemeClick={handleToggleThemeClick} />
-          <main className={clsx(classes.content, {
-            [classes.contentShrink]: drawerOpen,
-            [classes.contentExpand]: !drawerOpen,
-          })}>
-            <div className={classes.toolbar} />
-            <div className={classes.containerWrapper}>
-              <Container maxWidth="lg" className={classes.container}>
+    <>
+      <Head>
+        <link rel="shortcut icon" href="/favicon.ico" />
+      </Head>
+      <Provider session={pageProps.session}>
+        <ThemeProvider theme={theme}>
+          <div className={classes.root}>
+            <CssBaseline />
+            <Navbar drawerOpen={drawerOpen} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} handleToggleThemeClick={handleToggleThemeClick} />
+            <main className={clsx(classes.content, {
+              [classes.contentShrink]: drawerOpen,
+              [classes.contentExpand]: !drawerOpen,
+            })}>
+              <div className={classes.toolbar} />
+              <div className={classes.container} ref={content}>
                 <Component {...pageProps} />
                 <Footer />
-              </Container>
-            </div>
-          </main>
-        </div>
-      </ThemeProvider>
-    </Provider>
+              </div>
+              {
+                isBackToTopVisible &&
+                <Fab color="primary" size="small" className={classes.backToTop} onClick={scrollToTop}>
+                  <KeyboardArrowUpIcon />
+                </Fab>
+              }
+            </main>
+          </div>
+        </ThemeProvider>
+      </Provider>
+    </>
   );
 
 };

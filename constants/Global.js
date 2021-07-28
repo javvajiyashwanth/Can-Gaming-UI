@@ -4,9 +4,10 @@ export const DRAWER_WIDTH = 240;
 
 export const GAMES = [
     {
-        "name": "Tic Tac Toe",
+        "title": "Tic Tac Toe",
         "href": "/tic-tac-toe",
-        "src": "TicTacToe.png"
+        "src": "TicTacToe.png",
+        "modes": ["Single Player", "Multi Player"]
     },
     // {
     //     "name": "Rock Paper Scissors",
@@ -19,6 +20,7 @@ export const INITIAL_PLAYER_STATE = {
     name: "",
     email: "",
     value: "",
+    isHost: false,
 };
 
 export const INITIAL_TWO_PLAYER_SCORES_STATE = {
