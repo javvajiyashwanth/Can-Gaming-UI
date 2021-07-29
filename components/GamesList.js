@@ -1,10 +1,12 @@
 // React
 import React from 'react';
 
+// Next
+import Link from 'next/link';
+
 // Material UI
 // Core
 import Avatar from '@material-ui/core/Avatar';
-import Link from '@material-ui/core/Link';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
@@ -19,17 +21,19 @@ const GamesList = () => {
         <List>
             {
                 GAMES.map((game, index) => (
-                    <ListItem button component={Link} key={index} href={game.href}>
-                        <ListItemAvatar>
-                            <Avatar variant="rounded" src={`/images/${game.src}`} />
-                        </ListItemAvatar>
-                        <ListItemText
-                            primaryTypographyProps={{
-                                color: 'textPrimary',
-                            }}
-                            primary={game.title}
-                        />
-                    </ListItem>
+                    <Link href={game.href}>
+                        <ListItem button key={index}>
+                            <ListItemAvatar>
+                                <Avatar variant="rounded" src={`/images/${game.src}`} />
+                            </ListItemAvatar>
+                            <ListItemText
+                                primaryTypographyProps={{
+                                    color: 'textPrimary',
+                                }}
+                                primary={game.title}
+                            />
+                        </ListItem>
+                    </Link>
                 ))
             }
         </List>
