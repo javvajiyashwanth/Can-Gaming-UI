@@ -97,24 +97,25 @@ const useStyles = makeStyles((theme) => ({
 
 const MyApp = ({ Component, pageProps }) => {
 
+  // CSS Styles
   const classes = useStyles();
 
+  // Theme
   const { value: isDarkTheme, toggle: handleToggleThemeClick } = useDarkMode();
-
   const theme = isDarkTheme ? darkTheme : lightTheme;
 
+  // Router
   const router = useRouter();
-
   const [loading, setLoading] = useState(false);
 
+  // Side Bar
   const [drawerOpen, setDrawerOpen] = useState(false);
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
 
+  // Back to Top
   const content = createRef();
-
   const [isBackToTopVisible, setIsBackToTopVisible] = useState(false);
-
   const scrollToTop = () => {
     content.current.scrollTo({
       top: 0,
@@ -138,7 +139,7 @@ const MyApp = ({ Component, pageProps }) => {
       router.events.off('routeChangeError', done);
     }
 
-  });
+  }, []);
 
   useEffect(() => {
 
@@ -165,13 +166,21 @@ const MyApp = ({ Component, pageProps }) => {
   return (
     <>
       <Head>
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link
+          rel="shortcut icon"
+          href="/favicon.ico"
+        />
       </Head>
       <Provider session={pageProps.session}>
         <ThemeProvider theme={theme}>
           <div className={classes.root}>
             <CssBaseline />
-            <Navbar drawerOpen={drawerOpen} handleDrawerOpen={handleDrawerOpen} handleDrawerClose={handleDrawerClose} handleToggleThemeClick={handleToggleThemeClick} />
+            <Navbar
+              drawerOpen={drawerOpen}
+              handleDrawerOpen={handleDrawerOpen}
+              handleDrawerClose={handleDrawerClose}
+              handleToggleThemeClick={handleToggleThemeClick}
+            />
             <main className={clsx(classes.content, {
               [classes.contentShrink]: drawerOpen,
               [classes.contentExpand]: !drawerOpen,
@@ -183,21 +192,41 @@ const MyApp = ({ Component, pageProps }) => {
                       className={classes.loaderRoot}
                       style={{ backgroundColor: theme.palette.type === 'dark' ? theme.palette.grey.A400 : theme.palette.grey[50] }}
                     >
-                      <CircularProgress className={classes.spinner} size={90} />
-                      <CircularProgress className={classes.spinner} color="secondary" size={60} style={{transform: 'rotateZ(120deg)'}} />
-                      <CircularProgress className={classes.spinner} color="inherit" style={{transform: 'rotateZ(240deg)'}} />
+                      <CircularProgress
+                        className={classes.spinner}
+                        size={90}
+                      />
+                      <CircularProgress
+                        className={classes.spinner}
+                        color="secondary"
+                        size={60}
+                        style={{ transform: 'rotateZ(120deg)' }}
+                      />
+                      <CircularProgress
+                        className={classes.spinner}
+                        color="inherit"
+                        style={{ transform: 'rotateZ(240deg)' }}
+                      />
                     </div>
                   ) :
                   (
                     <>
                       <div className={classes.toolbar} />
-                      <div className={classes.container} ref={content}>
+                      <div
+                        className={classes.container}
+                        ref={content}
+                      >
                         <Component {...pageProps} />
                         <Footer />
                       </div>
                       {
                         isBackToTopVisible &&
-                        <Fab color="primary" size="small" className={classes.backToTop} onClick={scrollToTop}>
+                        <Fab
+                          color="primary"
+                          size="small"
+                          className={classes.backToTop}
+                          onClick={scrollToTop}
+                        >
                           <KeyboardArrowUpIcon />
                         </Fab>
                       }

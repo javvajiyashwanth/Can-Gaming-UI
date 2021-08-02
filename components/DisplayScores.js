@@ -14,10 +14,21 @@ const DisplayScores = ({ scores }) => {
 
     return (
         <Box mb={3}>
-            <Grid container spacing={2} alignItems="center" justify="space-around">
+            <Grid
+                container
+                spacing={2}
+                alignItems="center"
+                justify="space-around"
+            >
                 {
                     scores.map((score, index) => (
-                        <Grid key={index} item xs={4} md={3} lg={2}>
+                        <Grid
+                            key={index}
+                            item
+                            xs={4}
+                            md={3}
+                            lg={2}
+                        >
                             <Card>
                                 <CardHeader
                                     className={score.class}
@@ -25,7 +36,12 @@ const DisplayScores = ({ scores }) => {
                                     titleTypographyProps={{ align: 'center' }}
                                 />
                                 <CardContent style={{ paddingBottom: "16px" }}>
-                                    <Typography component="h4" variant="h4" color="textPrimary" align="center">
+                                    <Typography
+                                        component="h4"
+                                        variant="h4"
+                                        color="textPrimary"
+                                        align="center"
+                                    >
                                         {score.value}
                                     </Typography>
                                 </CardContent>

@@ -4,40 +4,37 @@ import { Server } from 'socket.io';
 // Utils
 import { generateRoomId } from '../../../utils/Global';
 
-export const createRoom = async () => {
+const rooms = new Map();
+
+const createRoom = async () => {
     let roomId = generateRoomId();
-    while (rooms.has(roomId)) roomId = generateRoomId();
-    rooms.set(roomId, {
-        players: [],
-        board: Array(9).fill(null),
-    });
+    while (rooms.has(roomId)) {
+        roomId = generateRoomId();
+    }
+    rooms.set(roomId, { players: [] });
     return roomId;
 };
 
-export const addPlayerToRoom = (roomId, player) => rooms.get(roomId).players.push(player);
-
-const rooms = new Map();
+const addPlayerToRoom = (roomId, player) => rooms.get(roomId).players.push(player);
 
 const ioHandler = (req, res) => {
     if (!res.socket.server.io) {
         const io = new Server(res.socket.server);
         io.on("connection", socket => {
+
             socket.on("New Game", ({ name, email }) => {
                 createRoom().then(roomId => {
-                    const player = {
-                        name,
-                        email,
-                        value: "",
-                        isHost: true,
-                    };
                     addPlayerToRoom(roomId, {
                         socketId: socket.id,
-                        ...player,
+                        name,
+                        email,
+                        isHost: true,
                     });
                     socket.join(roomId);
-                    io.to(roomId).emit("Waiting", { roomId, updatedPlayer: player });
+                    socket.emit("Waiting", { roomId });
                 });
             });
+            
             socket.on("Join Room", ({ name, email, roomId }) => {
                 if (rooms.has(roomId)) {
                     const room = rooms.get(roomId);
@@ -49,21 +46,17 @@ const ioHandler = (req, res) => {
                                 cause: "Join Room",
                             });
                         } else {
-                            const player = {
-                                name,
-                                email,
-                                value: "",
-                                isHost: false,
-                            };
                             addPlayerToRoom(roomId, {
                                 socketId: socket.id,
-                                ...player,
+                                name,
+                                email,
+                                isHost: false,
                             });
                             socket.join(roomId);
                             const { socketId: playerOneSocket, ...playerOne } = room.players[0];
                             const { socketId: playerTwoSocket, ...playerTwo } = room.players[1];
                             socket.emit("Join Successful", { otherPlayer: playerOne });
-                            io.to(playerOneSocket).emit("Other Player Joined", { otherPlayer: playerTwo });
+                            io.to(playerOneSocket).emit("Join Successful", { otherPlayer: playerTwo });
                         }
                     } else {
                         socket.emit("Alert", {
@@ -80,23 +73,21 @@ const ioHandler = (req, res) => {
                     });
                 }
             });
-            socket.on("Set Turn", ({ player, opponent, roomId }) => {
-                const room = rooms.get(roomId);
-                room.players[0].value = player;
-                room.players[1].value = opponent;
-                const { socketId: playerOneSocket, ...playerOne } = room.players[0];
-                const { socketId: playerTwoSocket, ...playerTwo } = room.players[1];
-                io.to(playerOneSocket).emit("Set Players", { players: [playerOne, playerTwo] });
-                io.to(playerTwoSocket).emit("Set Players", { players: [playerTwo, playerOne] });
-            });
-            socket.on("Move", ({ index, placeValue, roomId }) => {
-                const board = rooms.get(roomId).board;
-                board[index] = placeValue;
-                io.to(roomId).emit("Update Game State", {
-                    board,
-                    turn: placeValue === "X" ? "O" : "X",
+            
+            socket.on("Set Turn", ({ playerValue, opponentValue, roomId }) => {
+                io.to(rooms.get(roomId).players[1].socketId).emit("Set Turn", {
+                    playerValue: opponentValue,
+                    opponentValue: playerValue,
                 });
             });
+            
+            socket.on("Move", ({ index, value, roomId }) => {
+                io.to(roomId).emit("Update Game State", {
+                    index,
+                    value,
+                });
+            });
+            
             socket.on("Send Play Again Request", ({ email, roomId }) => {
                 const room = rooms.get(roomId);
                 const playerIndex = room.players[0].email === email ? 0 : 1;
@@ -104,16 +95,9 @@ const ioHandler = (req, res) => {
                 io.to(room.players[playerIndex].socketId).emit("Play Again Request Sent");
                 io.to(room.players[otherPlayerIndex].socketId).emit("Play Again Request Received");
             });
-            socket.on("Accept Play Again Request", ({ roomId }) => {
-                const room = rooms.get(roomId);
-                room.board = Array(9).fill(null);
-                room.players[0].value = "";
-                room.players[1].value = "";
-                const { socketId: playerOneSocket, ...playerOne } = room.players[0];
-                const { socketId: playerTwoSocket, ...playerTwo } = room.players[1];
-                io.to(playerOneSocket).emit("Play Again", { players: [playerOne, playerTwo] });
-                io.to(playerTwoSocket).emit("Play Again", { players: [playerTwo, playerOne] });
-            });
+
+            socket.on("Accept Play Again Request", ({ roomId }) => io.to(roomId).emit("Play Again"));
+            
             socket.on('disconnecting', () => {
                 // @ts-ignore
                 const currentRooms = [...socket.rooms];
@@ -129,12 +113,13 @@ const ioHandler = (req, res) => {
                             currentRoom.players = currentRoom.players.filter((player) => player.socketId !== socket.id);
                             if (player.isHost) {
                                 currentRoom.players[0].isHost = true;
-                                const { socketId, ...opponent } = currentRoom.players[0];
                                 io.to(roomId).emit("Alert", {
                                     severity: "info",
                                     message: `${player.name} got disconnected. You are the host now!`,
                                     cause: "Host Left",
-                                    updatedPlayer: opponent
+                                    payload: {
+                                        roomId,
+                                    },
                                 });
                             } else {
                                 io.to(roomId).emit("Alert", {
@@ -143,8 +128,6 @@ const ioHandler = (req, res) => {
                                     cause: "Player Left",
                                 });
                             }
-                            const { socketId, ...opponent } = currentRoom.players[0];
-                            io.to(roomId).emit("Waiting", { roomId, updatedPlayer: opponent });
                             break;
                     }
                 }

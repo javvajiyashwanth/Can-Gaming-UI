@@ -19,8 +19,8 @@ import TabPanel from '@material-ui/lab/TabPanel';
 import GameThumbnail from '../components/GameThumbnail';
 
 // Constants
-import { useRootStyles } from '../constants/Styles';
 import { GAMES } from '../constants/Global';
+import { useRootStyles } from '../constants/Styles';
 
 const Home = () => {
 
@@ -30,10 +30,11 @@ const Home = () => {
   // CSS Classes
   const rootClasses = useRootStyles();
 
+  // Theme
   const theme = useTheme();
 
+  // Tabs
   const [tab, setTab] = useState("Single Player");
-
   const handleTabChange = (event, newTab) => setTab(newTab);
 
   return (
@@ -50,18 +51,40 @@ const Home = () => {
               variant="fullWidth"
               centered
             >
-              <Tab label="Single Player" value="Single Player" />
-              <Tab label="Multi Player" value="Multi Player" />
+              <Tab
+                label="Single Player"
+                value="Single Player"
+              />
+              <Tab
+                label="Multi Player"
+                value="Multi Player"
+              />
             </TabList>
           </AppBar>
           <TabPanel value="Single Player">
             <div className={rootClasses.flex}>
-              {SINGLE_PLAYER_GAMES.map((game, index) => <GameThumbnail key={index} game={game} mode="Single Player" />)}
+              {
+                SINGLE_PLAYER_GAMES.map((game, index) => (
+                  <GameThumbnail
+                    key={index}
+                    game={game}
+                    mode="Single Player"
+                  />
+                ))
+              }
             </div>
           </TabPanel>
           <TabPanel value="Multi Player">
             <div className={rootClasses.flex}>
-              {MULTI_PLAYER_GAMES.map((game, index) => <GameThumbnail key={index} game={game} mode="Multi Player" />)}
+              {
+                MULTI_PLAYER_GAMES.map((game, index) => (
+                  <GameThumbnail
+                    key={index}
+                    game={game}
+                    mode="Multi Player"
+                  />
+                ))
+              }
             </div>
           </TabPanel>
         </TabContext>

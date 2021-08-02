@@ -13,15 +13,19 @@ import styles from '../../styles/TicTacToe/Board.module.css';
 
 const Board = ({ board, isYourTurn, handleCellClick }) => {
 
+	// Theme
 	const theme = useTheme();
 
 	return (
-		<Box className={styles.board} boxShadow={3}>
+		<Box
+			className={styles.board}
+			boxShadow={3}
+		>
 			{
 				board.map((value, index) => (
 					<Button
-						className={styles.cell}
 						key={index}
+						className={styles.cell}
 						onClick={() => {
 							if (isYourTurn) handleCellClick(index);
 						}}

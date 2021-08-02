@@ -1,7 +1,6 @@
 // Material UI
 // Core
 import { makeStyles } from '@material-ui/core/styles';
-import { FullscreenExitTwoTone } from '@material-ui/icons';
 
 export const useColorStyles = makeStyles((theme) => ({
     primary: {

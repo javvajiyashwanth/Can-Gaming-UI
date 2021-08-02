@@ -6,6 +6,8 @@ export const isValidRoomId = (roomId) => roomId.length === 6 && isNumber(roomId)
 
 export const generateRoomId = () => {
     let roomId = '';
-    for (let i = 0; i < ROOM_ID_LENGTH; i++) roomId += ROOM_ID_CHARACTERS.charAt(Math.floor(Math.random() * ROOM_ID_CHARACTERS.length));
+    for (let i = 0; i < ROOM_ID_LENGTH; i++) {
+        roomId += ROOM_ID_CHARACTERS.charAt(Math.floor(Math.random() * ROOM_ID_CHARACTERS.length));
+    }
     return roomId;
 };

@@ -7,7 +7,7 @@ export const GAMES = [
         "title": "Tic Tac Toe",
         "href": "/tic-tac-toe",
         "src": "TicTacToe.png",
-        "modes": ["Single Player", "Multi Player"]
+        "modes": ["Single Player", "Multi Player"],
     },
     // {
     //     "name": "Rock Paper Scissors",

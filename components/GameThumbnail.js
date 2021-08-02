@@ -19,7 +19,7 @@ const GameThumbnail = ({ game, mode }) => {
 
     // CSS Styles
     const gameThumbnailClasses = useGameThumbnailStyles();
-    
+
     const { title, src, href } = game;
 
     return (
@@ -32,7 +32,11 @@ const GameThumbnail = ({ game, mode }) => {
                         title={title}
                     />
                     <CardContent>
-                        <Typography gutterBottom variant="h5" component="h2">
+                        <Typography
+                            gutterBottom
+                            variant="h5"
+                            component="h2"
+                        >
                             {title}
                         </Typography>
                     </CardContent>

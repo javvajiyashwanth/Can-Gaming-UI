@@ -7,25 +7,25 @@ const baseTheme = {
         fontFamily: [
             '"Segeo UI"',
             'Roboto',
-            '"Helvetica Neue"'
+            '"Helvetica Neue"',
         ].join(',')
     },
     palette: {
-    }
+    },
 };
 
 export const darkTheme = createMuiTheme({
     ...baseTheme,
     palette: {
         ...baseTheme.palette,
-        type: 'dark'
-    }
+        type: 'dark',
+    },
 });
 
 export const lightTheme = createMuiTheme({
     ...baseTheme,
     palette: {
         ...baseTheme.palette,
-        type: 'light'
-    }
+        type: 'light',
+    },
 });

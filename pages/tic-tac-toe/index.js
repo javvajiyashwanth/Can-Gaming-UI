@@ -23,7 +23,7 @@ const TicTacToe = () => {
     return (
         <>
             <Head>
-                <title>Tic Tac Toe</title>
+                <title>Can Gaming | Tic Tac Toe</title>
             </Head>
             <div className={rootClasses.padding}>
                 <div className={rootClasses.flex}>

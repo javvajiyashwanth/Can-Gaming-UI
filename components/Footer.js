@@ -16,11 +16,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Footer = () => {
 
+    // CSS Styles
     const classes = useStyles();
 
     return (
         <footer className={classes.footer}>
-            <Typography variant="body2" color="textSecondary" align="center">Copyright &copy; Can Gaming</Typography>
+            <Typography
+                variant="body2"
+                color="textSecondary"
+                align="center"
+            >
+                Copyright &copy; Can Gaming
+            </Typography>
         </footer>
     );
 

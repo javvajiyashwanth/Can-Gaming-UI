@@ -19,7 +19,6 @@ import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -48,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    padding: '0 8px',
+    padding: theme.spacing(0, 1),
     ...theme.mixins.toolbar,
   },
   appBar: {
@@ -128,22 +127,22 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
 
   // CSS Classes
   const classes = useStyles();
-  
+
   // Theme
   const theme = useTheme();
 
   // Loading State
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Next Auth Session
-  const [session] = useSession();
+  const [session, loading] = useSession();
 
   // Profile Menu
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const handleProfileMenuOpen = (event) => setProfileAnchorEl(event.currentTarget);
   const handleProfileMenuClose = () => setProfileAnchorEl(null);
   const isProfileMenuOpen = Boolean(profileAnchorEl);
-  
+
   // Mobile Menu
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null);
   const handleMobileMenuOpen = (event) => setMobileMoreAnchorEl(event.currentTarget);
@@ -151,7 +150,7 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const profileMenuId = 'primary-search-account-menu';
-  const renderProfileMenu = (
+  const renderProfileMenu = session && (
     <Menu
       anchorEl={profileAnchorEl}
       anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -161,7 +160,7 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
       open={isProfileMenuOpen}
       onClose={handleProfileMenuClose}
     >
-      {session && <MenuItem>{session.user.name}</MenuItem>}
+      <MenuItem>{session.user.name}</MenuItem>
       <MenuItem onClick={() => signOut()}>Logout</MenuItem>
     </Menu>
   );
@@ -178,28 +177,30 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
       onClose={handleMobileMenuClose}
     >
       {
-        session ?
-          <MenuItem onClick={handleProfileMenuOpen}>
-            <IconButton
-              aria-label="account of current user"
-              aria-controls="primary-search-account-menu"
-              aria-haspopup="true"
-              color="inherit"
-            >
-              <Avatar
-                className={classes.avatarSmall}
-                alt={session.user.name}
-                src={session.user.image}
-              />
-            </IconButton>
-            <p>Profile</p>
-          </MenuItem> :
-          <MenuItem onClick={() => signIn()}>
-            <IconButton color="inherit">
-              <LockOpen />
-            </IconButton>
-            <p>Login</p>
-          </MenuItem>
+        loading ? <></> : (
+          session ?
+            <MenuItem onClick={handleProfileMenuOpen}>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="primary-search-account-menu"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <Avatar
+                  className={classes.avatarSmall}
+                  alt={session.user.name}
+                  src={session.user.image}
+                />
+              </IconButton>
+              <p>Profile</p>
+            </MenuItem> :
+            <MenuItem onClick={() => signIn()}>
+              <IconButton color="inherit">
+                <LockOpen />
+              </IconButton>
+              <p>Login</p>
+            </MenuItem>
+        )
       }
       <MenuItem onClick={handleToggleThemeClick}>
         <IconButton color="inherit">
@@ -235,36 +236,42 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
           >
             <MenuIcon />
           </IconButton>
-          <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.title}
+          >
             <Link href="/">
-              <a className={classes.link}>
-                Can Gaming
-              </a>
+              <a className={classes.link}>Can Gaming</a>
             </Link>
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             {
-              session ?
-                <IconButton
-                  aria-label="account of current user"
-                  aria-controls={profileMenuId}
-                  aria-haspopup="true"
-                  onClick={handleProfileMenuOpen}
-                  color="inherit"
-                >
-                  <Avatar
-                    className={classes.avatarSmall}
-                    alt={session.user.name}
-                    src={session.user.image}
-                  />
-                </IconButton> :
-                <Button
-                  color="inherit"
-                  onClick={() => signIn()}
-                >
-                  Login
-                </Button>
+              loading ? <></> : (
+                session ?
+                  <IconButton
+                    aria-label="account of current user"
+                    aria-controls={profileMenuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                  >
+                    <Avatar
+                      className={classes.avatarSmall}
+                      alt={session.user.name}
+                      src={session.user.image}
+                    />
+                  </IconButton> :
+                  <Button
+                    color="inherit"
+                    onClick={() => signIn()}
+                  >
+                    Login
+                  </Button>
+              )
             }
             <Tooltip title={`Switch to ${theme.palette.type === 'dark' ? 'light' : 'dark'} theme`}>
               <IconButton
@@ -310,9 +317,7 @@ const Navbar = ({ drawerOpen, handleDrawerOpen, handleDrawerClose, handleToggleT
           </IconButton>
         </div>
         <Divider />
-        <List>
-          <GamesList />
-        </List>
+        <GamesList />
       </Drawer>
     </div>
   );

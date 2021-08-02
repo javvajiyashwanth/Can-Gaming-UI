@@ -21,10 +21,16 @@ const GamesList = () => {
         <List>
             {
                 GAMES.map((game, index) => (
-                    <Link href={game.href}>
-                        <ListItem button key={index}>
+                    <Link
+                        key={index}
+                        href={game.href}
+                    >
+                        <ListItem button>
                             <ListItemAvatar>
-                                <Avatar variant="rounded" src={`/images/${game.src}`} />
+                                <Avatar
+                                    variant="rounded"
+                                    src={`/images/${game.src}`}
+                                />
                             </ListItemAvatar>
                             <ListItemText
                                 primaryTypographyProps={{
