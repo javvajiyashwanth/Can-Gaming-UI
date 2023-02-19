@@ -1,4 +1,4 @@
-# [Online Gaming Platform](https://can-gaming.herokuapp.com/)
+# Online Gaming Platform
 This platform is a web-based gaming platform that allows gamers to play with a buddy or an AI opponent. The platform uses AI algorithms, specifically the mini-max algorithm, for single-player games. It also uses web sockets for multiplayer games with 2 or more players. The website was built using Next.js, a React framework for server-rendered React applications.
 
 ## Technologies Used
