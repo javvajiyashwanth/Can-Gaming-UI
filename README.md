@@ -17,11 +17,8 @@ This platform is a web-based gaming platform that allows gamers to play with a b
 
 ## Getting Started
 - Clone the repository
-
    ```git clone https://github.com/javvajiyashwanth/can-gaming.git```
 - Install dependencies
-
    ```npm install```
 - Start the development server
-
    ```npm run dev```
